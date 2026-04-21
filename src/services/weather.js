@@ -52,7 +52,10 @@ function processWeatherData(data, startYear, endYear) {
     if (temp !== null && temp !== undefined && temp > 30) {
       annualData[year].heatDays++
     }
-    if (wind > 60) {
+    // Open-Meteo serves ERA5 reanalysis data (gridded model, ~9 km resolution).
+    // Peak gusts are smoothed out — even Lethbridge never exceeds 55 km/h in
+    // this dataset. 40 km/h is the effective threshold for notable wind days.
+    if (wind > 40) {
       annualData[year].extremeWindDays++
     }
   })

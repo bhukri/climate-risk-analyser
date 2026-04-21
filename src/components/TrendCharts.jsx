@@ -100,9 +100,9 @@ export default function TrendCharts({ annualData }) {
   }
 
   const extremeWindColors = annualData.map(d =>
-    d.extremeWindDays >= 20
+    d.extremeWindDays >= 15
       ? 'rgba(239, 68, 68, 0.8)'
-      : d.extremeWindDays >= 10
+      : d.extremeWindDays >= 7
       ? 'rgba(249, 115, 22, 0.8)'
       : 'rgba(59, 130, 246, 0.8)'
   )
@@ -111,7 +111,7 @@ export default function TrendCharts({ annualData }) {
     labels,
     datasets: [
       {
-        label: 'Extreme Wind Days (>60km/h)',
+        label: 'Strong Wind Days (>40km/h)',
         data: annualData.map(d => d.extremeWindDays),
         backgroundColor: extremeWindColors,
         borderColor: extremeWindColors.map(c => c.replace('0.8', '1')),
@@ -164,7 +164,7 @@ export default function TrendCharts({ annualData }) {
           <span className="chart-dot chart-dot--orange" />
           Extreme Wind Events
         </h3>
-        <p className="chart-sub">Days with wind speed exceeding 60 km/h</p>
+        <p className="chart-sub">Days with wind speed exceeding 40 km/h (ERA5 model data)</p>
         <div className="chart-container">
           <Bar data={windData} options={windOptions} />
         </div>

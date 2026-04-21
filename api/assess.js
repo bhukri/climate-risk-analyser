@@ -47,7 +47,7 @@ Coordinates: ${location.lat.toFixed(4)}°N, ${Math.abs(location.lng).toFixed(4)}
 
 10-Year Historical Weather Data (${startYear}–${endYear}):
 ${annualData.map(d =>
-  `${d.year}: Precipitation ${d.precipitation.toFixed(0)}mm | Max Wind ${d.maxWind.toFixed(0)}km/h | Snowfall ${d.snowfall.toFixed(0)}cm | Heat Days (>30°C) ${d.heatDays} | Extreme Wind Days (>60km/h) ${d.extremeWindDays}`
+  `${d.year}: Precipitation ${d.precipitation.toFixed(0)}mm | Max Wind ${d.maxWind.toFixed(0)}km/h | Snowfall ${d.snowfall.toFixed(0)}cm | Heat Days (>30°C) ${d.heatDays} | Strong Wind Days (>40km/h) ${d.extremeWindDays}`
 ).join('\n')}
 
 Summary Statistics:
@@ -55,7 +55,7 @@ Summary Statistics:
 - Peak Wind Speed Recorded: ${peakWind}km/h
 - Avg Heat Days/Year (>30°C): ${avgHeatDays}
 - Avg Annual Snowfall: ${avgSnowfall}cm
-- Avg Extreme Wind Days/Year (>60km/h): ${avgExtremeWind}
+- Avg Strong Wind Days/Year (>40km/h): ${avgExtremeWind}
 
 Please provide the structured underwriting risk assessment.`
 
