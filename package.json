@@ -1,0 +1,23 @@
+{
+  "name": "canadian-climate-risk-analyser",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js & vite",
+    "dev:api": "node server.js",
+    "dev:ui": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "chart.js": "^4.4.4",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.1"
+  }
+}
