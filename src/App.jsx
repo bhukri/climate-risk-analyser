@@ -15,7 +15,50 @@ const LOADING_STEPS = [
   { key: 'ai', message: 'Generating AI risk assessment...' },
 ]
 
+function AccessGate({ onUnlock, gateError }) {
+  const [input, setInput] = useState('')
+  const [localError, setLocalError] = useState(false)
+  const showError = gateError || localError
+
+  const submit = (e) => {
+    e.preventDefault()
+    const code = input.trim()
+    if (!code) { setLocalError(true); return }
+    sessionStorage.setItem('access_code', code)
+    onUnlock(code)
+  }
+
+  return (
+    <div className="gate-overlay">
+      <div className="gate-card">
+        <div className="brand-icon" style={{ margin: '0 auto 1.25rem' }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        </div>
+        <h2 className="gate-title">Canadian Climate Risk Analyser</h2>
+        <p className="gate-subtitle">Enter your access code to continue</p>
+        <form onSubmit={submit} className="gate-form">
+          <input
+            type="password"
+            className={`gate-input${showError ? ' gate-input--error' : ''}`}
+            placeholder="Access code"
+            value={input}
+            onChange={e => { setInput(e.target.value); setLocalError(false) }}
+            autoFocus
+          />
+          {showError && <p className="gate-error">Incorrect access code — try again</p>}
+          <button type="submit" className="gate-btn">Unlock</button>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
+  const [accessCode, setAccessCode] = useState(() => sessionStorage.getItem('access_code') || '')
+  const [gateError, setGateError] = useState(false)
   const [location, setLocation] = useState(null)
   const [annualData, setAnnualData] = useState(null)
   const [assessment, setAssessment] = useState('')
@@ -24,7 +67,7 @@ export default function App() {
   const [error, setError] = useState(null)
   const [aiLoading, setAiLoading] = useState(false)
 
-  const analyse = useCallback(async (query) => {
+  const analyse = useCallback(async (query, code = accessCode) => {
     setError(null)
     setAssessment('')
     setRating(null)
@@ -46,9 +89,16 @@ export default function App() {
       const apiBase = import.meta.env.DEV ? 'http://localhost:3001' : ''
       const res = await fetch(`${apiBase}/api/assess`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-access-code': code },
         body: JSON.stringify({ location: loc, annualData: data }),
       })
+
+      if (res.status === 401) {
+        sessionStorage.removeItem('access_code')
+        setAccessCode('')
+        setGateError(true)
+        return
+      }
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: 'API error' }))
@@ -65,14 +115,24 @@ export default function App() {
       setAiLoading(false)
       setLoadingStep(null)
     }
-  }, [])
+  }, [accessCode])
+
+  const handleUnlock = useCallback((code) => {
+    setAccessCode(code)
+    setGateError(false)
+    analyse(DEFAULT_CITY, code)
+  }, [analyse])
 
   useEffect(() => {
-    analyse(DEFAULT_CITY)
-  }, [analyse])
+    if (accessCode) analyse(DEFAULT_CITY)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const isLoading = loadingStep !== null
   const currentStep = LOADING_STEPS.find(s => s.key === loadingStep)
+
+  if (!accessCode) {
+    return <AccessGate onUnlock={handleUnlock} gateError={gateError} />
+  }
 
   return (
     <div className="app">

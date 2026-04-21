@@ -15,6 +15,11 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
+  const accessCode = (process.env.ACCESS_CODE || '').trim()
+  if (accessCode && req.headers['x-access-code'] !== accessCode) {
+    return res.status(401).json({ error: 'Invalid access code' })
+  }
+
   const { location, annualData } = req.body
 
   if (!location || !annualData) {
